@@ -2,8 +2,9 @@
 """
 AIONUS Agent-to-Agent Dispatcher to Rias (rias@agentmail.to)
 Automatically sends Warm Lead Handoffs and End-of-Day Activity Reports from the
-operator's AI directly to Rias (Executive AI Partner to Hashim at AIONUS),
-and outputs a clean WhatsApp summary card as a backup.
+operator's AI directly to Rias (Executive AI Partner to Hashim at AIONUS).
+Auto-resolves or creates an AgentMail inbox if only AGENTMAIL_API_KEY is set,
+falls back to SMTP if configured, and always prints a clean WhatsApp summary card.
 """
 import argparse
 import datetime
@@ -32,8 +33,53 @@ def load_env(env_path: str = ".env") -> dict:
     return env
 
 
+def resolve_agentmail_inbox(api_key: str, existing_inbox_id: str = "") -> str:
+    if existing_inbox_id and existing_inbox_id != "YOUR_AGENTMAIL_INBOX_ID":
+        return existing_inbox_id
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    # 1. Try listing existing inboxes
+    try:
+        req = urllib.request.Request(
+            "https://api.agentmail.to/v0/inboxes", headers=headers, method="GET"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            inboxes = data.get("inboxes", data if isinstance(data, list) else [])
+            if inboxes and isinstance(inboxes, list):
+                first = inboxes[0]
+                inbox_id = first.get("inbox_id") or first.get("id") or first.get("address")
+                if inbox_id:
+                    return inbox_id
+    except Exception:
+        pass
+
+    # 2. Auto-create an inbox if none exists yet
+    try:
+        req = urllib.request.Request(
+            "https://api.agentmail.to/v0/inboxes",
+            data=json.dumps({}).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            inbox_id = data.get("inbox_id") or data.get("id") or data.get("address")
+            if inbox_id:
+                return inbox_id
+    except Exception:
+        pass
+    return ""
+
+
 def send_via_agentmail_api(api_key: str, inbox_id: str, subject: str, text_body: str) -> tuple[bool, str]:
-    url = f"https://api.agentmail.to/v0/inboxes/{inbox_id}/messages/send"
+    resolved_inbox = resolve_agentmail_inbox(api_key, inbox_id)
+    if not resolved_inbox:
+        return False, "Could not resolve or create an AgentMail inbox with AGENTMAIL_API_KEY"
+
+    url = f"https://api.agentmail.to/v0/inboxes/{resolved_inbox}/messages/send"
     payload = json.dumps({
         "to": [RIAS_EMAIL],
         "subject": subject,
@@ -51,7 +97,7 @@ def send_via_agentmail_api(api_key: str, inbox_id: str, subject: str, text_body:
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
             if 200 <= resp.status < 300:
-                return True, f"Dispatched to {RIAS_EMAIL} via AgentMail API"
+                return True, f"Dispatched to {RIAS_EMAIL} via AgentMail ({resolved_inbox})"
             return False, f"AgentMail HTTP {resp.status}"
     except Exception as e:
         return False, f"AgentMail API error: {e}"
@@ -145,9 +191,10 @@ def main():
     sent = False
     status_msg = "No email API configured in .env yet (use AgentMail MCP tool or copy the WhatsApp card below)."
 
-    if env.get("AGENTMAIL_API_KEY") and env.get("AGENTMAIL_INBOX_ID"):
+    api_key = env.get("AGENTMAIL_API_KEY", "")
+    if api_key and api_key != "YOUR_AGENTMAIL_API_KEY":
         sent, status_msg = send_via_agentmail_api(
-            env["AGENTMAIL_API_KEY"], env["AGENTMAIL_INBOX_ID"], subject, email_body
+            api_key, env.get("AGENTMAIL_INBOX_ID", ""), subject, email_body
         )
     elif env.get("SMTP_EMAIL") and env.get("SMTP_APP_PASSWORD"):
         sent, status_msg = send_via_smtp(

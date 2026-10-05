@@ -39,9 +39,14 @@ Before presenting a lead to the user, verify:
 
 Use your connected MCP tools and APIs in this exact sequence:
 
-1. **Broad Discovery (`tavily` / `exa` / `apify`):**
+1. **Broad Discovery & Mass Phone Number Scraping (`tavily` / `exa` / `apify`):**
    * Search for founder-led businesses by niche, growth signal, or directory.
-   * When mass-scraping phone numbers or regional business directories (for cold calling clinics, hospitality, real estate, design firms, or retail brands), use **Apify** (`APIFY_TOKEN` via `@apify/actors-mcp-server` or Python scripts) to pull structured business listings, websites, and phone numbers.
+   * When mass-scraping phone numbers and websites for cold calling (clinics, hospitality, real estate, interior studios, retail boutiques), run the built-in Apify scraper script directly:
+     ```bash
+     python3 scripts/scrape_leads_apify.py --query "dermatology clinic" --location "Mumbai, India" --limit 15
+     ```
+     *(Or use `@apify/actors-mcp-server` via MCP).*
+   * **Important:** After pulling business listings with phone numbers, always check the company's website (`/about`) or LinkedIn to find the **Founder / CEO / Owner's name** before calling so you never dial blind.
 2. **LinkedIn Warm Lead & Engager Scraping (`linkedin-engager-analytics` + `apify`):**
    * Use Apify no-cookie actors (`scraping_solutions/linkedin-posts-engagers-likers-and-commenters-no-cookies`) to extract Founders and CEOs actively engaging on industry posts.
 3. **Website & Storefront Deep-Dive (`firecrawl` / `playwright`):**

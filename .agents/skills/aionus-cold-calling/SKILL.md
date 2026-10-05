@@ -73,3 +73,26 @@ Whenever the user says *"Practice a cold call with me"*, *"Roleplay a call"*, or
 1. Play the role of a realistic, busy Indian Founder/CEO of a 20-person company (e.g., a D2C apparel founder, a multi-branch clinic owner, or a luxury interior studio principal).
 2. Respond in short, realistic spoken sentences (1 to 3 sentences at a time) and throw 1 or 2 real-world objections (*"What do you guys actually do?"*, *"How much do you charge?"*, *"Send me an email"*).
 3. After 3 to 4 exchanges, step out of character and give the user **3 crisp coaching pointers** (what they did well, where to tighten their phrasing, and whether they remembered to escalate pricing and close for a 10-minute call with Hashim).
+
+---
+
+## 6. Post-Call WhatsApp Follow-Up Scripts (40 to 65 Words)
+
+On Indian B2B cold calls, founders frequently say *"Send me a quick WhatsApp message"* or agree to a call and ask for a WhatsApp confirmation. Never send a long brochure. Use these exact, crisp templates (zero em dashes):
+
+### A. When the Founder Says *"Send Me Details on WhatsApp"*
+```text
+Hey [First Name], [Your Name] here from AIONUS (https://www.aionus.in), following up on our quick call.
+
+We are an AI-first venture helping businesses scale and run more efficiently using custom AI solutions and intelligent automation workflows. Hashim, our Founder, had a specific idea for [Brand Name] around [1-line observation/outcome].
+
+Open to a quick 10-minute call with Hashim this week?
+```
+
+### B. When the Founder Agrees to a Call with Hashim
+```text
+Hey [First Name], great speaking with you just now. Locking in your quick 10-minute discovery call with Hashim, Founder at AIONUS (https://www.aionus.in), for [Day] at [Time].
+
+Sharing our website here for quick reference: https://www.aionus.in. Looking forward to it.
+```
+*(Reminder: The moment a founder agrees to a call, also trigger `aionus-rias-handoff` so Rias receives the full email at `rias@agentmail.to`!)*
