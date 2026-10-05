@@ -1,0 +1,47 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "apify": {
+      "command": "npx",
+      "args": ["-y", "@apify/actors-mcp-server"],
+      "env": {
+        "APIFY_TOKEN": "YOUR_APIFY_API_TOKEN"
+      }
+    },
+    "agentmail": {
+      "command": "npx",
+      "args": ["-y", "agentmail-mcp"],
+      "env": {
+        "AGENTMAIL_API_KEY": "YOUR_AGENTMAIL_API_KEY"
+      }
+    },
+    "tavily": {
+      "command": "npx",
+      "args": ["-y", "tavily-mcp@latest"],
+      "env": {
+        "TAVILY_API_KEY": "YOUR_TAVILY_API_KEY"
+      }
+    },
+    "exa": {
+      "command": "npx",
+      "args": ["-y", "exa-mcp-server"],
+      "env": {
+        "EXA_API_KEY": "YOUR_EXA_API_KEY"
+      }
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_API_KEY"
+      }
+    }
+  }
+}
